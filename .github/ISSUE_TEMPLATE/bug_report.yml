@@ -1,0 +1,74 @@
+name: Bug report
+description: Something does not work as expected.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug!
+
+        **Security problems must not be reported here** — please follow [SECURITY.md](https://github.com/shenyizg/veilfold/blob/main/SECURITY.md).
+        Never paste passwords, recovery keys, or the contents of `vault.json` or `index.vfi`.
+  - type: dropdown
+    id: data
+    attributes:
+      label: Is any of your data inaccessible?
+      description: We prioritise anything that keeps people from their files.
+      options:
+        - "No, all my files are fine"
+        - "Yes, I cannot unlock a folder or files seem to be missing"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Add a folder in encrypt mode
+        2. ...
+  - type: dropdown
+    id: interface
+    attributes:
+      label: Interface
+      options:
+        - Desktop app
+        - Command line
+        - Both
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Protection mode
+      options:
+        - Encrypt
+        - Hide
+        - Not applicable
+  - type: input
+    id: version
+    attributes:
+      label: Veilfold version
+      description: Output of `veilfold version`, or the version shown in the app's settings.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "macOS 26.1 (Apple silicon), Windows 11 24H2, Ubuntu 24.04, ..."
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Error messages or output
+      description: Copy any error message or terminal output. Remove personal file names if you prefer.
+      render: text

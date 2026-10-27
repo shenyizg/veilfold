@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+        <key>CFBundleName</key>
+        <string>{{.Info.ProductName}}</string>
+        <key>CFBundleDisplayName</key>
+        <string>{{.Info.ProductName}}</string>
+        <key>CFBundleExecutable</key>
+        <string>{{.OutputFilename}}</string>
+        <key>CFBundleIdentifier</key>
+        <string>io.github.shenyizg.veilfold</string>
+        <key>CFBundleVersion</key>
+        <string>{{.Info.ProductVersion}}</string>
+        <key>CFBundleShortVersionString</key>
+        <string>{{.Info.ProductVersion}}</string>
+        <key>CFBundleGetInfoString</key>
+        <string>{{.Info.Comments}}</string>
+        <key>CFBundleIconFile</key>
+        <string>iconfile</string>
+        <key>LSMinimumSystemVersion</key>
+        <string>13.0.0</string>
+        <key>LSApplicationCategoryType</key>
+        <string>public.app-category.utilities</string>
+        <key>NSHighResolutionCapable</key>
+        <string>true</string>
+        <key>NSHumanReadableCopyright</key>
+        <string>{{.Info.Copyright}}</string>
+        <!-- Shown by macOS when Veilfold first moves a folder in these locations. -->
+        <key>NSDocumentsFolderUsageDescription</key>
+        <string>Veilfold needs access to lock and unlock the folders you protect in Documents.</string>
+        <key>NSDesktopFolderUsageDescription</key>
+        <string>Veilfold needs access to lock and unlock the folders you protect on the Desktop.</string>
+        <key>NSDownloadsFolderUsageDescription</key>
+        <string>Veilfold needs access to lock and unlock the folders you protect in Downloads.</string>
+        <key>NSRemovableVolumesUsageDescription</key>
+        <string>Veilfold needs access to lock and unlock the folders you protect on removable drives.</string>
+        <key>NSNetworkVolumesUsageDescription</key>
+        <string>Veilfold needs access to lock and unlock the folders you protect on network drives.</string>
+    </dict>
+</plist>

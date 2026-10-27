@@ -1,0 +1,123 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GO_VERSION: "1.26.x"
+  WAILS: github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: |
+            go.sum
+            gui/go.sum
+      - name: gofmt
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "These files need gofmt:"; echo "$unformatted"; exit 1
+          fi
+      - name: go mod tidy
+        run: |
+          go mod tidy -diff
+          (cd gui && go mod tidy -diff)
+      - name: go vet (Linux, macOS, Windows)
+        run: |
+          for os in linux darwin windows; do
+            echo "::group::GOOS=$os"
+            GOOS=$os go vet ./...
+            echo "::endgroup::"
+          done
+          (cd gui && GOOS=windows go vet -tags desktop,production .)
+      - name: govulncheck
+        run: |
+          go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+          (cd gui && go run golang.org/x/vuln/cmd/govulncheck@latest -tags desktop,production ./...)
+
+  test:
+    name: Test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            flags: -race
+          - os: macos-latest
+            flags: -race
+          - os: windows-latest
+            flags: ""
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Test
+        run: go test ${{ matrix.flags }} -count=1 ./...
+      - name: Build CLI
+        run: go build -o bin/ ./cmd/veilfold
+      - name: Smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Relative paths behave the same on every runner, including Git Bash on Windows.
+          export VEILFOLD_DATA_DIR="smoke-data"
+          v="./bin/veilfold"
+          if [ -f "$v.exe" ]; then v="$v.exe"; fi
+          dir="smoke folder"
+          mkdir -p "$dir/sub" && echo "smoke" > "$dir/sub/file.txt"
+          echo "smoke-password" | "$v" --password-stdin init --no-recovery-key
+          echo "smoke-password" | "$v" --password-stdin add "$dir"
+          test ! -e "$dir"
+          echo "smoke-password" | "$v" --password-stdin list
+          echo "smoke-password" | "$v" --password-stdin unlock --all
+          test "$(cat "$dir/sub/file.txt")" = "smoke"
+          "$v" info
+
+  gui:
+    name: Desktop app (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS
+            os: macos-latest
+            platform: darwin/universal
+          - name: Windows
+            os: windows-latest
+            platform: windows/amd64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: |
+            go.sum
+            gui/go.sum
+      - name: Build
+        working-directory: gui
+        run: go run ${{ env.WAILS }} build -clean -skipbindings -trimpath -platform ${{ matrix.platform }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: veilfold-desktop-${{ matrix.name }}
+          path: gui/build/bin/
+          retention-days: 7

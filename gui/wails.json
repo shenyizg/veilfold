@@ -1,0 +1,19 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "Veilfold",
+  "outputfilename": "Veilfold",
+  "frontend:dir": "./frontend",
+  "frontend:install": "",
+  "frontend:build": "",
+  "wailsjsdir": "./frontend",
+  "author": {
+    "name": "The Veilfold Authors"
+  },
+  "info": {
+    "companyName": "The Veilfold Authors",
+    "productName": "Veilfold",
+    "productVersion": "0.1.0",
+    "copyright": "Copyright © 2026 The Veilfold Authors. MIT License.",
+    "comments": "Hide and lock private folders behind a password."
+  }
+}
