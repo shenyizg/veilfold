@@ -8,6 +8,7 @@ permissions:
   contents: read
 
 env:
+  # setup-go uses check-latest, so builds get Go security fixes before the runner images do.
   GO_VERSION: "1.26.x"
   WAILS: github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
 
@@ -20,6 +21,7 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
+          check-latest: true
       - name: Test
         run: go test -count=1 ./...
       - name: Build archives
@@ -68,6 +70,7 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
+          check-latest: true
           cache-dependency-path: |
             go.sum
             gui/go.sum
