@@ -49,8 +49,15 @@ jobs:
           (cd gui && GOOS=windows go vet -tags desktop,production .)
       - name: govulncheck
         run: |
-          go run golang.org/x/vuln/cmd/govulncheck@latest ./...
-          (cd gui && go run golang.org/x/vuln/cmd/govulncheck@latest -tags desktop,production ./...)
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck="$(go env GOPATH)/bin/govulncheck"
+          for os in linux darwin windows; do
+            echo "::group::GOOS=$os"
+            GOOS=$os "$govulncheck" ./...
+            echo "::endgroup::"
+          done
+          # The desktop app's Linux backend needs GTK headers, which this runner does not have.
+          (cd gui && GOOS=windows "$govulncheck" -tags desktop,production ./...)
 
   test:
     name: Test (${{ matrix.os }})

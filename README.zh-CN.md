@@ -77,12 +77,12 @@ Veilfold 能让你选择的文件夹**从文件系统中原来的位置消失**�
 
 | 平台 | 桌面应用 | 命令行 |
 | ---- | -------- | ------ |
-| macOS 13+（Apple 芯片与 Intel） | `Veilfold_<版本>_macos_universal.zip` | `veilfold_<版本>_darwin_<架构>.tar.gz` |
-| Windows 10/11（x64） | `Veilfold_<版本>_windows_amd64.zip` | `veilfold_<版本>_windows_<架构>.zip` |
+| macOS 13+（Apple 芯片与 Intel） | `Veilfold-Desktop_<版本>_macos_universal.zip` | `veilfold_<版本>_darwin_<架构>.tar.gz` |
+| Windows 10/11（x64） | `Veilfold-Desktop_<版本>_windows_amd64.zip` | `veilfold_<版本>_windows_<架构>.zip` |
 | Linux（x64、arm64） | —（可从源码构建，实验性） | `veilfold_<版本>_linux_<架构>.tar.gz` |
 
 > [!NOTE]
-> 发布版暂未进行代码签名。macOS 首次打开时请右键点击 **Veilfold.app → 打开**；
+> 发布版暂未使用开发者证书签名。macOS 上请先打开一次 Veilfold，再到**系统设置 → 隐私与安全性**中点击**仍要打开**；
 > Windows 上在 SmartScreen 对话框中选择**更多信息 → 仍要运行**。
 
 ### 从源码构建

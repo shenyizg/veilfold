@@ -78,13 +78,14 @@ Grab the latest build from the [releases page](https://github.com/shenyizg/veilf
 
 | Platform | Desktop app | Command line |
 | -------- | ----------- | ------------ |
-| macOS 13+ (Apple silicon and Intel) | `Veilfold_<version>_macos_universal.zip` | `veilfold_<version>_darwin_<arch>.tar.gz` |
-| Windows 10/11 (x64) | `Veilfold_<version>_windows_amd64.zip` | `veilfold_<version>_windows_<arch>.zip` |
+| macOS 13+ (Apple silicon and Intel) | `Veilfold-Desktop_<version>_macos_universal.zip` | `veilfold_<version>_darwin_<arch>.tar.gz` |
+| Windows 10/11 (x64) | `Veilfold-Desktop_<version>_windows_amd64.zip` | `veilfold_<version>_windows_<arch>.zip` |
 | Linux (x64, arm64) | — (build from source, experimental) | `veilfold_<version>_linux_<arch>.tar.gz` |
 
 > [!NOTE]
-> Release builds are not yet code-signed. On macOS, right-click **Veilfold.app → Open** the first time.
-> On Windows, choose **More info → Run anyway** in the SmartScreen dialog.
+> Release builds are not yet signed with a developer certificate. On macOS, open Veilfold once, then click
+> **Open Anyway** in **System Settings → Privacy & Security**. On Windows, choose **More info → Run anyway**
+> in the SmartScreen dialog.
 
 ### Build from source
 

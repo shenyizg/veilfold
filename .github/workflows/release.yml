@@ -92,7 +92,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           mkdir -p dist
-          ditto -c -k --keepParent gui/build/bin/Veilfold.app "dist/Veilfold_${GITHUB_REF_NAME#v}_macos_universal.zip"
+          ditto -c -k --keepParent gui/build/bin/Veilfold.app "dist/Veilfold-Desktop_${GITHUB_REF_NAME#v}_macos_universal.zip"
       - name: Package (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -100,7 +100,7 @@ jobs:
           New-Item -ItemType Directory -Force dist | Out-Null
           $version = $env:GITHUB_REF_NAME.TrimStart('v')
           Compress-Archive -Path gui/build/bin/Veilfold.exe, LICENSE, README.md `
-            -DestinationPath "dist/Veilfold_${version}_windows_amd64.zip"
+            -DestinationPath "dist/Veilfold-Desktop_${version}_windows_amd64.zip"
       - uses: actions/upload-artifact@v7
         with:
           name: release-desktop-${{ matrix.name }}
@@ -121,6 +121,11 @@ jobs:
       - name: Checksums
         run: |
           cd dist
+          # GitHub compares asset names case-insensitively, so names must differ by more than case.
+          clashes="$(ls | tr '[:upper:]' '[:lower:]' | sort | uniq -d)"
+          if [ -n "$clashes" ]; then
+            echo "Asset names that differ only in case:"; echo "$clashes"; exit 1
+          fi
           sha256sum * > SHA256SUMS.txt
           cat SHA256SUMS.txt
       - uses: softprops/action-gh-release@v3
