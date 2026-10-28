@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-28
+
 ### Fixed
 
 - Desktop app: buttons and choices inside dialogs did not respond. **Protect**, **Change password** and
@@ -17,6 +19,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   title bar.
 - Desktop app: the "Lock the folder now" choice is kept when the dialog updates with the folder's size,
   and selecting text in a dialog's field no longer closes the dialog when the mouse is released outside.
+
+### Security
+
+- Desktop app: `golang.org/x/net` is updated to v0.62.0 (GO-2026-6866, GO-2026-6860). The affected HTML
+  parser only ever reads the app's own bundled page.
 
 ## [0.1.0] - 2026-10-27
 
@@ -45,5 +52,6 @@ First public release.
 - Desktop app for macOS and Windows: drag and drop, progress with cancel, unlocking to another
   location, auto-lock after inactivity, password and recovery key management, light and dark themes.
 
-[Unreleased]: https://github.com/shenyizg/veilfold/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/shenyizg/veilfold/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/shenyizg/veilfold/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/shenyizg/veilfold/releases/tag/v0.1.0
