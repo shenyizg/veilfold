@@ -99,6 +99,9 @@
   };
   const labelOf = (input) => q('span', input.closest('label'));
 
+  // The app shows a result's toast before it has refreshed the folder list,
+  // so states in the list are awaited rather than asserted right away.
+
   async function protectDialog() {
     return waitFor('the protect dialog to measure the folder', () => {
       const f = q('form[data-form=protect]');
@@ -181,14 +184,14 @@
       assert(lockNow.checked, '“Lock the folder now” cannot be ticked');
       click(submit(f), 'Protect');
       await waitFor('the lock to finish', () => toast('“Taxes” is encrypted and locked.') && idle());
-      assert(q('.pill.locked', card('Taxes')), 'Taxes is not shown as locked');
+      await waitFor('Taxes to be shown as locked', () => q('.pill.locked', card('Taxes')));
       await check('locked', 'Taxes');
     }],
 
     ['unlock it again', async () => {
       click(cardButton('Taxes', 'unlock'), 'Unlock');
       await waitFor('the unlock to finish', () => toast('“Taxes” is unlocked.') && idle());
-      assert(q('.pill.unlocked', card('Taxes')), 'Taxes is not shown as unlocked');
+      await waitFor('Taxes to be shown as unlocked', () => q('.pill.unlocked', card('Taxes')));
       await check('intact', 'Taxes');
     }],
 
@@ -205,7 +208,7 @@
     ['lock all from the top bar', async () => {
       click(q('[data-action=lock-all]'), 'Lock all');
       await waitFor('every folder to be locked', () => toast('The folder is locked.') && idle());
-      assert(qa('.item').every((c) => q('.pill.locked', c)), 'not every folder is shown as locked');
+      await waitFor('every folder to be shown as locked', () => qa('.item').every((c) => q('.pill.locked', c)));
       await check('locked', 'Taxes');
       await check('hidden', 'Photos');
     }],
@@ -353,7 +356,7 @@
         /Encrypting|Verifying/.test((q('#progress-label') || {}).textContent) && q('#progress [data-action=cancel]'));
       click(cancel, 'Cancel');
       await waitFor('the lock to stop', () => toast('Cancelled. Nothing was changed.') && idle());
-      assert(q('.pill.unlocked', card('Big')), 'Big is not shown as unlocked');
+      await waitFor('Big to be shown as unlocked', () => q('.pill.unlocked', card('Big')));
       await check('cancelled', 'Big');
     }],
 
