@@ -124,6 +124,9 @@ jobs:
           cache-dependency-path: |
             go.sum
             gui/go.sum
+      - name: Test (UI in headless Chrome)
+        working-directory: gui
+        run: go test -count=1 ./...
       - name: Build
         working-directory: gui
         run: go run ${{ env.WAILS }} build -clean -skipbindings -trimpath -platform ${{ matrix.platform }}

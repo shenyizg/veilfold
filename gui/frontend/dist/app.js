@@ -245,7 +245,6 @@
   };
 
   function render() {
-    document.body.classList.toggle('in-main', state.view === 'main');
     $('#app').innerHTML = (views[state.view] || views.loading)();
     const focus = $('#app [autofocus]');
     if (focus) focus.focus();
@@ -446,7 +445,7 @@
               'The folder is moved to a concealed place on the same drive. Instant for any size, but the contents are not encrypted.', false)}
           </div>
           ${warnings}
-          <label class="check"><input type="checkbox" name="lockNow" checked><span>Lock the folder now</span></label>
+          <label class="check"><input type="checkbox" name="lockNow" ${m.lockNow === false ? '' : 'checked'}><span>Lock the folder now</span></label>
         </div>
         <div class="modal-foot">
           <button class="btn ghost" type="button" data-action="close-modal">Cancel</button>
@@ -898,7 +897,6 @@
     'close-vault': closeVault,
     cancel: (el) => { el.disabled = true; call('Cancel'); },
     'close-modal': closeModal,
-    backdrop: (el, e) => { if (e.target === el) closeModal(); },
     'confirm-choice': (el) => {
       const b = state.modal && state.modal.buttons && state.modal.buttons[Number(el.dataset.index)];
       if (b) b.run();
@@ -910,6 +908,11 @@
 
   // ------------------------------------------------------------------ wiring
 
+  // Where the current mouse press started; the backdrop closes its dialog
+  // only when a click starts and ends on the backdrop itself.
+  let pressTarget = null;
+  document.addEventListener('mousedown', (e) => { pressTarget = e.target; }, true);
+
   document.addEventListener('click', (e) => {
     const el = e.target.closest('[data-action]');
     if (state.menuFor && !e.target.closest('.menu') && !(el && el.dataset.action === 'menu')) {
@@ -917,6 +920,12 @@
       updateMenu();
     }
     if (!el || el.disabled) return;
+    if (el.dataset.action === 'backdrop') {
+      // Clicks inside a dialog bubble up to its backdrop. They must keep
+      // their default action: submitting forms, ticking boxes and choices.
+      if (e.target === el && pressTarget === el) closeModal();
+      return;
+    }
     const fn = actions[el.dataset.action];
     if (fn) {
       e.preventDefault();
@@ -949,6 +958,9 @@
       state.modal.mode = t.value;
       t.closest('.choices').querySelectorAll('.choice').forEach((c) =>
         c.classList.toggle('selected', c.querySelector('input').checked));
+    } else if (t.name === 'lockNow' && state.modal && state.modal.type === 'add') {
+      // Keep the choice when the dialog re-renders with the folder's size.
+      state.modal.lockNow = t.checked;
     } else if (t.dataset.setting) {
       const key = t.dataset.setting;
       state.settings[key] = key === 'autoLockMinutes' ? Number(t.value) : t.value;

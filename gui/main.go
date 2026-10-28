@@ -53,7 +53,9 @@ func main() {
 		},
 		DragAndDrop: &options.DragAndDrop{EnableFileDrop: true, DisableWebViewDrop: true},
 		Mac: &mac.Options{
-			TitleBar: mac.TitleBarHiddenInset(),
+			// The standard title bar: web content never sits under it, so every
+			// control receives clicks (an inset toolbar swallows them).
+			TitleBar: mac.TitleBarDefault(),
 			About: &mac.AboutInfo{
 				Title:   "Veilfold " + version.Version,
 				Message: "Hide and lock private folders.\nMIT License · github.com/shenyizg/veilfold",

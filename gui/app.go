@@ -24,6 +24,9 @@ type App struct {
 	ctx      context.Context
 	svc      *core.Service
 	settings *settingsStore
+	// emit and pickFolder reach the window. Tests replace them.
+	emit       func(name string, data ...any)
+	pickFolder func(title string) (string, error)
 
 	mu       sync.Mutex
 	sess     *core.Session
@@ -38,7 +41,20 @@ func NewApp() (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &App{svc: svc, settings: newSettingsStore(svc.DataDir())}, nil
+	return newApp(svc), nil
+}
+
+func newApp(svc *core.Service) *App {
+	a := &App{svc: svc, settings: newSettingsStore(svc.DataDir())}
+	a.emit = func(name string, data ...any) { wruntime.EventsEmit(a.ctx, name, data...) }
+	a.pickFolder = func(title string) (string, error) {
+		return wruntime.OpenDirectoryDialog(a.ctx, wruntime.OpenDialogOptions{
+			Title:                title,
+			CanCreateDirectories: true,
+			ShowHiddenFiles:      false,
+		})
+	}
+	return a
 }
 
 func (a *App) startup(ctx context.Context) {
@@ -64,7 +80,7 @@ func (a *App) secondInstance(_ interface{}) {
 
 // beforeClose keeps the window open while an operation runs, and lets the
 // user decide what to do with unlocked folders.
-func (a *App) beforeClose(ctx context.Context) bool {
+func (a *App) beforeClose(context.Context) bool {
 	a.mu.Lock()
 	quitting, busy, sess := a.quitting, a.busy, a.sess
 	a.mu.Unlock()
@@ -72,12 +88,12 @@ func (a *App) beforeClose(ctx context.Context) bool {
 		return false
 	}
 	if busy {
-		wruntime.EventsEmit(ctx, "quit:busy")
+		a.emit("quit:busy")
 		return true
 	}
 	if sess != nil {
 		if items, err := sess.Items(); err == nil && unlockedCount(items) > 0 {
-			wruntime.EventsEmit(ctx, "quit:confirm", unlockedCount(items))
+			a.emit("quit:confirm", unlockedCount(items))
 			return true
 		}
 	}
@@ -288,11 +304,7 @@ func (a *App) Items() ([]core.Item, error) {
 
 // ChooseFolder shows a folder picker and returns "" if it was cancelled.
 func (a *App) ChooseFolder(title string) (string, error) {
-	return wruntime.OpenDirectoryDialog(a.ctx, wruntime.OpenDialogOptions{
-		Title:                title,
-		CanCreateDirectories: true,
-		ShowHiddenFiles:      false,
-	})
+	return a.pickFolder(title)
 }
 
 // Inspect checks a folder before protecting it. Measuring its size stops
@@ -342,17 +354,17 @@ func (a *App) run(kind string, it core.Item, fn func(ctx context.Context, sess *
 		a.mu.Lock()
 		a.busy, a.cancel = false, nil
 		a.mu.Unlock()
-		wruntime.EventsEmit(a.ctx, "op:end", it.ID)
+		a.emit("op:end", it.ID)
 	}()
 
-	wruntime.EventsEmit(a.ctx, "op:start", OpInfo{Kind: kind, ID: it.ID, Name: it.Name})
+	a.emit("op:start", OpInfo{Kind: kind, ID: it.ID, Name: it.Name})
 	var last time.Time
 	progress := func(p core.Progress) {
 		if time.Since(last) < 80*time.Millisecond && p.Done != p.Total {
 			return
 		}
 		last = time.Now()
-		wruntime.EventsEmit(a.ctx, "op:progress", OpProgress{ID: it.ID, Phase: string(p.Phase), Done: p.Done, Total: p.Total})
+		a.emit("op:progress", OpProgress{ID: it.ID, Phase: string(p.Phase), Done: p.Done, Total: p.Total})
 	}
 	return fn(ctx, sess, progress)
 }

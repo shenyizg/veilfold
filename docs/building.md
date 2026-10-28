@@ -66,6 +66,10 @@ GOOS=windows go build -tags desktop,production -ldflags "-H windowsgui" .
 The `gui/` directory is its own Go module (it depends on the root module through a `replace` directive),
 so `go test ./...` at the repository root never needs GUI dependencies.
 
+`make gui-test` (or `go test ./...` in `gui/`) clicks through the whole desktop UI in headless Chrome
+against the real backend. It needs Google Chrome or Chromium; set `VEILFOLD_CHROME` to the browser's
+path if it is not found, and the test is skipped when no browser is available.
+
 ### Icons
 
 The application icon is rendered by `scripts/gen_icons.py` (Python 3, no dependencies), which writes

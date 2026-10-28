@@ -248,6 +248,12 @@ macOS, WebView2 on Windows). There is no JavaScript build step.
 - `internal/fsx`: atomic writes, removal of read-only trees, advisory locks, volume detection and
   concealment, exercised natively on each platform.
 - `internal/cli`: end-to-end command workflows in-process.
+- `gui`: the desktop app's real frontend runs in headless Chrome against the real backend, and a script
+  clicks through every flow the way a user would: creating a vault, protecting in both modes, locking,
+  unlocking, changing the password, recovering with the recovery key, restoring to another location,
+  and cancelling a lock half-way. Each click is hit-tested, so covered controls fail the test. After
+  every step that touches files, the test checks on disk that the folders are byte-for-byte intact,
+  that encrypted folders are not readable anywhere, and that no stray files remain.
 
 In addition, failure-injection tests cover saves that fail mid-operation, clean-ups that cannot delete,
 original locations that disappear during a lock, files that change while being locked, replaced

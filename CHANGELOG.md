@@ -7,6 +7,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Desktop app: buttons and choices inside dialogs did not respond. **Protect**, **Change password** and
+  **Create recovery key** did nothing, and the Encrypt/Hide choice and the "Lock the folder now" box
+  could not be changed.
+- Desktop app on macOS: **Lock all**, **Settings** and **Close vault** did not respond on recent macOS
+  versions, where the inset title bar's toolbar area took the clicks. The app now uses the standard
+  title bar.
+- Desktop app: the "Lock the folder now" choice is kept when the dialog updates with the folder's size,
+  and selecting text in a dialog's field no longer closes the dialog when the mouse is released outside.
+
 ## [0.1.0] - 2026-10-27
 
 First public release.

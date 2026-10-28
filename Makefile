@@ -5,7 +5,7 @@ VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo 0.1.
 LDFLAGS := -s -w -X github.com/shenyizg/veilfold/internal/version.Version=$(VERSION)
 WAILS   := go run github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
 
-.PHONY: all build test race vet fmt lint cross gui gui-dev icons clean
+.PHONY: all build test race vet fmt lint cross gui gui-dev gui-test icons clean
 
 all: vet test build
 
@@ -49,6 +49,10 @@ cross:
 ## gui: build the desktop app for this platform (gui/build/bin/)
 gui:
 	cd gui && $(WAILS) build -clean -skipbindings -trimpath -ldflags "-X github.com/shenyizg/veilfold/internal/version.Version=$(VERSION)"
+
+## gui-test: test the desktop app, clicking through its UI in headless Chrome
+gui-test:
+	cd gui && go test ./...
 
 ## gui-dev: run the desktop app in development mode with live reload
 gui-dev:
